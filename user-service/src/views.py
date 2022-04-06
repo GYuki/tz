@@ -15,9 +15,9 @@ blueprint = Blueprint('user', __name__)
 @marshal_with(user_schema)
 def register_user(username, **kwargs):
     try:
-        user = User(username)
-        db.session.add(user)
-        db.session.commit()
+        user = User(username).save()
+        # db.session.add(user)
+        # db.session.commit()
         user.token = create_access_token(identity=user.id)
     except IntegrityError:
         db.session.rollback()
