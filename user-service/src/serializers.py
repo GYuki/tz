@@ -12,3 +12,6 @@ class UserSchema(Schema):
     @post_dump
     def dump_user(self, data, **kwargs):
         return data
+
+
+user_schema = UserSchema()

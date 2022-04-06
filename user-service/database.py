@@ -23,4 +23,4 @@ class CrudOperations(Model):
         return db.session.commit()
 
 
-db = SQLAlchemy()
+db = SQLAlchemy(model_class=CrudOperations)
