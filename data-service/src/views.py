@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_apispec import use_kwargs, marshal_with
 from flask_jwt_extended import jwt_required
 from marshmallow import fields
@@ -12,10 +12,9 @@ blueprint = Blueprint('data', __name__)
 
 
 @blueprint.route('/api/data', methods=('GET',))
-@jwt_required
-@use_kwargs(user_data_schema)
 @marshal_with(user_data_schema)
-def get_user_data(player_id):
+def get_user_data():
+    player_id = int(request.args.get('player_id'))
     user_data = services.get_user_data(player_id)
     if not user_data:
         return  # 404
@@ -23,7 +22,6 @@ def get_user_data(player_id):
 
 
 @blueprint.route('/api/data', methods=('POST',))
-@jwt_required
 @use_kwargs(user_data_schema)
 @marshal_with(user_data_schema)
 def create_user_data(player_id):
