@@ -1,7 +1,5 @@
 from flask import Blueprint, request
 from flask_apispec import use_kwargs, marshal_with
-from flask_jwt_extended import jwt_required
-from marshmallow import fields
 from sqlalchemy.exc import IntegrityError
 
 from database import db
