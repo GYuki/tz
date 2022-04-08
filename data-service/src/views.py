@@ -31,3 +31,15 @@ def create_user_data(player_id):
         db.session.rollback()
         return
     return user_data
+
+
+@blueprint.route('/api/data', methods=('PUT',))
+@use_kwargs(user_data_schema)
+@marshal_with(user_data_schema)
+def update_user_data(player_id, balance):
+    try:
+        user_data = services.update_user_data(player_id, balance)
+    except IntegrityError:
+        db.session.rollback()
+        return
+    return user_data
