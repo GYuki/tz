@@ -22,3 +22,10 @@ def get_info(user):
 def purchase_item(user):
     item_id = request.json['item_id']
     return services.purchase_item(user, item_id)
+
+
+@blueprint.route('/sell', methods=('POST',))
+@token_checker
+def sell_item(user):
+    item_id = request.json['item_id']
+    return services.sell_item(user, item_id)
