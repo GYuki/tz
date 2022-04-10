@@ -17,9 +17,6 @@ def update_user_data(player_id, balance):
     return user
 
 
-def change_balance(player_id, balance):
-    user = get_user_data(player_id)
-    if user is None:
-        return None
+def change_balance(user, balance):
     user.update(balance=balance+user.balance)
     return user

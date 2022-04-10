@@ -47,8 +47,43 @@ def update_user_data(player_id, balance):
 @use_kwargs(user_data_schema)
 @marshal_with(user_data_schema)
 def daily_bonus(player_id):
+    user = services.get_user_data(player_id)
+    if user is None:
+        return  # raise 404
     try:
         user_data = services.change_balance(player_id, 100)
+    except IntegrityError:
+        db.session.rollback()
+        return
+    return user_data
+
+
+@blueprint.route('/api/data/purchase', methods=('PUT',))
+@use_kwargs(user_data_schema)
+@marshal_with(user_data_schema)
+def purchase_item(player_id, price):
+    user = services.get_user_data(player_id)
+    if user is None:
+        return  # raise 404
+    if user.balance < price:
+        return  # raise no balance
+    try:
+        user_data = services.change_balance(player_id, price)
+    except IntegrityError:
+        db.session.rollback()
+        return
+    return user_data
+
+
+@blueprint.route('/api/data/sell', methods=('PUT',))
+@use_kwargs(user_data_schema)
+@marshal_with(user_data_schema)
+def sell_item(player_id, price):
+    user = services.get_user_data(player_id)
+    if user is None:
+        return  # raise 404
+    try:
+        user_data = services.change_balance(player_id, price)
     except IntegrityError:
         db.session.rollback()
         return
