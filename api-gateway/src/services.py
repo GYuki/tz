@@ -43,5 +43,47 @@ def get_info(user):
     }
 
 
+def purchase_item(user, item_id):
+    item_response = requests.get(f'{item_service}/api/item?id={item_id}')
+    if item_response.status_code != 200:
+        return _make_error_response(item_response)
+
+    if _take_money(user['id'], item_response.json()['price']).status_code != 200:
+        print('shut money')
+        return  # raise error
+
+    if _add_item(user['id'], item_id).status_code != 200:
+        # rollback transaction
+        print('rollback')
+        if _give_money(user['id'], item_response.json()['price']):
+            print('could not give money')
+            return  # raise error
+
+    return {
+        'status': True
+    }
+
+
+def _add_item(user_id, item_id):
+    return requests.post(f'{user_item_service}/api/user_items', json={
+        'user_id': user_id,
+        'item_id': item_id
+    }, headers=request.headers)
+
+
+def _take_money(user_id, balance):
+    return requests.put(f'{user_data_service}/api/data/take_money', json={
+        'player_id': user_id,
+        'balance': balance
+    }, headers=request.headers)
+
+
+def _give_money(user_id, balance):
+    return requests.put(f'{user_data_service}/api/data/give_money', json={
+        'player_id': user_id,
+        'balance': balance
+    }, headers=request.headers)
+
+
 def _make_error_response(response):
     return Response(response.content, response.status_code)

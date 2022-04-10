@@ -34,9 +34,13 @@ def add_item_to_user(user_id, item_id):
     try:
         services.add_item_to_user(user_id, item_id)
     except IntegrityError:
+        print('ERROR')
         return  # return exc
 
-    return
+    print('SUCCESS')
+    return {
+        "success": True
+    }
 
 
 @blueprint.route('/api/user_items', methods=('DELETE',))

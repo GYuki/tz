@@ -51,39 +51,39 @@ def daily_bonus(player_id):
     if user is None:
         return  # raise 404
     try:
-        user_data = services.change_balance(player_id, 100)
+        user_data = services.change_balance(user, 100)
     except IntegrityError:
         db.session.rollback()
         return
     return user_data
 
 
-@blueprint.route('/api/data/purchase', methods=('PUT',))
+@blueprint.route('/api/data/give_money', methods=('PUT',))
 @use_kwargs(user_data_schema)
 @marshal_with(user_data_schema)
-def purchase_item(player_id, price):
+def give_money(player_id, balance):
     user = services.get_user_data(player_id)
     if user is None:
         return  # raise 404
-    if user.balance < price:
+    try:
+        user_data = services.change_balance(user, balance)
+    except IntegrityError:
+        db.session.rollback()
+        return
+    return user_data
+
+
+@blueprint.route('/api/data/take_money', methods=('PUT',))
+@use_kwargs(user_data_schema)
+@marshal_with(user_data_schema)
+def take_money(player_id, balance):
+    user = services.get_user_data(player_id)
+    if user is None:
+        return  # raise 404
+    if user.balance < -balance:
         return  # raise no balance
     try:
-        user_data = services.change_balance(player_id, price)
-    except IntegrityError:
-        db.session.rollback()
-        return
-    return user_data
-
-
-@blueprint.route('/api/data/sell', methods=('PUT',))
-@use_kwargs(user_data_schema)
-@marshal_with(user_data_schema)
-def sell_item(player_id, price):
-    user = services.get_user_data(player_id)
-    if user is None:
-        return  # raise 404
-    try:
-        user_data = services.change_balance(player_id, price)
+        user_data = services.change_balance(user, -balance)
     except IntegrityError:
         db.session.rollback()
         return

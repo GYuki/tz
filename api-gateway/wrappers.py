@@ -12,5 +12,6 @@ def token_checker(f):
 
         data = response.json()
         return f(data, *args)
+    function_wrapper.__name__ = f.__name__
     return function_wrapper
 

@@ -1,7 +1,5 @@
-import requests
-from flask import Blueprint, request, Response
+from flask import Blueprint, request
 
-from src.endpoints import user_service, user_data_service
 from wrappers import token_checker
 from src import services
 
@@ -17,3 +15,10 @@ def login():
 @token_checker
 def get_info(user):
     return services.get_info(user)
+
+
+@blueprint.route('/purchase', methods=('POST',))
+@token_checker
+def purchase_item(user):
+    item_id = request.json['item_id']
+    return services.purchase_item(user, item_id)
