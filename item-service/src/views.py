@@ -20,7 +20,7 @@ def get_item():
 @blueprint.route('/api/items', methods=('GET',))
 @marshal_with(items_schema)
 def get_items():
-    item_ids = request.args.get('ids')
+    item_ids = request.args.get('ids').split(',')
     limit = request.args.get('limit', 20)
     offset = request.args.get('offset', 0)
     return services.get_items(item_ids, limit, offset)
