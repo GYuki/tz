@@ -2,6 +2,7 @@ from marshmallow import Schema, fields, post_dump, pre_load
 
 
 class UserSchema(Schema):
+    id = fields.Int()
     username = fields.Str()
     token = fields.Str(dump_only=True)
 
