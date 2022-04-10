@@ -41,3 +41,15 @@ def update_user_data(player_id, balance):
         db.session.rollback()
         return
     return user_data
+
+
+@blueprint.route('/api/data/daily_bonus', methods=('PUT',))
+@use_kwargs(user_data_schema)
+@marshal_with(user_data_schema)
+def daily_bonus(player_id):
+    try:
+        user_data = services.change_balance(player_id, 100)
+    except IntegrityError:
+        db.session.rollback()
+        return
+    return user_data
