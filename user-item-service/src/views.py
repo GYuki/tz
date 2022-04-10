@@ -8,6 +8,16 @@ from src import services
 blueprint = Blueprint('user-item', __name__)
 
 
+@blueprint.route('/api/user_item', methods=('GET',))
+def get_user_item():
+    user_id = int(request.args.get('user_id'))
+    item_id = int(request.args.get('item_id'))
+    item = services.get_item(user_id=user_id, item_id=item_id)
+    if item is None:
+        return  # return 404
+    return item
+
+
 @blueprint.route('/api/user_items', methods=('GET',))
 def get_user_items():
     user_id = int(request.args.get('user_id'))
