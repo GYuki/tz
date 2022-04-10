@@ -2,6 +2,8 @@ from flask import Blueprint, request
 from flask_apispec import use_kwargs
 from sqlalchemy.exc import IntegrityError
 
+from database import db
+from exceptions import InvalidUsage
 from src.serializers import user_item_data
 from src import services
 
@@ -14,7 +16,7 @@ def get_user_item():
     item_id = int(request.args.get('item_id'))
     item = services.get_item(user_id=user_id, item_id=item_id)
     if item is None:
-        return  # return 404
+        raise InvalidUsage.user_item_not_found()
     return item
 
 
@@ -34,10 +36,9 @@ def add_item_to_user(user_id, item_id):
     try:
         services.add_item_to_user(user_id, item_id)
     except IntegrityError:
-        print('ERROR')
-        return  # return exc
+        db.session.rollback()
+        raise InvalidUsage.user_item_already_exists()
 
-    print('SUCCESS')
     return {
         "success": True
     }
@@ -48,5 +49,5 @@ def add_item_to_user(user_id, item_id):
 def remove_item_from_user(user_id, item_id):
     result = services.remove_item_from_user(user_id, item_id)
     if not result:
-        return  # 404
+        raise InvalidUsage.user_item_not_found()
     return

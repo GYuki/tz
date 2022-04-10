@@ -1,6 +1,7 @@
 from flask import Flask
 
 from database import db
+from exceptions import InvalidUsage
 from extensions import jwt, migrate
 from src.views import blueprint
 
@@ -18,7 +19,18 @@ def create_app(config_object=Config):
     app.config.from_object(config_object)
     register_extensions(app)
     register_blueprints(app)
+    register_error_handlers(app)
     return app
+
+
+def register_error_handlers(app):
+
+    def errorhandler(error):
+        response = error.to_json()
+        response.status_code = error.status_code
+        return response
+
+    app.errorhandler(InvalidUsage)(errorhandler)
 
 
 def register_extensions(app):

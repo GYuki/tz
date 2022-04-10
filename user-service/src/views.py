@@ -4,6 +4,7 @@ from flask_jwt_extended import create_access_token, jwt_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 from database import db
+from exceptions import InvalidUsage
 from src.serializers import user_schema
 from src import services
 
@@ -18,7 +19,7 @@ def login(username, **kwargs):
         user = services.get_user(username)
     except IntegrityError:
         db.session.rollback()
-        return  # return error
+        raise InvalidUsage.user_already_registered()
     user.token = create_access_token(identity=user.username)
 
     return user

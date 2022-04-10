@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from flask_apispec import marshal_with
 
+from exceptions import InvalidUsage
 from src.serializers import item_schema, items_schema
 from src import services
 
@@ -13,7 +14,7 @@ def get_item():
     item_id = int(request.args.get('id'))
     item = services.get_item_by_id(item_id)
     if item is None:
-        return  # 404
+        raise InvalidUsage.item_not_found()
     return item
 
 

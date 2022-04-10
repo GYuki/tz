@@ -48,13 +48,15 @@ def sell_item(user, item_id):
     if item_response.status_code != 200:
         return _make_error_response(item_response)
 
-    if _remove_item(user['id'], item_id).status_code != 200:
-        return  # raise error
+    remove_item_response = _remove_item(user['id'], item_id)
+    if remove_item_response.status_code != 200:
+        return _make_error_response(remove_item_response)
 
     if _give_money(user['id'], item_response.json()['price']).status_code != 200:
         # rollback transaction
-        if _add_item(user['id'], item_id).status_code != 200:
-            return  # raise error
+        add_item_response = _add_item(user['id'], item_id)
+        if add_item_response.status_code != 200:
+            return _make_error_response(add_item_response)
 
     return {
         'status': True
@@ -66,13 +68,15 @@ def purchase_item(user, item_id):
     if item_response.status_code != 200:
         return _make_error_response(item_response)
 
-    if _take_money(user['id'], item_response.json()['price']).status_code != 200:
-        return  # raise error
+    take_money_response = _take_money(user['id'], item_response.json()['price'])
+    if take_money_response.status_code != 200:
+        return _make_error_response(take_money_response)
 
     if _add_item(user['id'], item_id).status_code != 200:
         # rollback transaction
-        if _give_money(user['id'], item_response.json()['price']):
-            return  # raise error
+        give_money_response = _give_money(user['id'], item_response.json()['price'])
+        if give_money_response.status_code != 200:
+            return _make_error_response(give_money_response)
 
     return {
         'status': True

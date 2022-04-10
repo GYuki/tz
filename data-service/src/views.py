@@ -3,6 +3,7 @@ from flask_apispec import use_kwargs, marshal_with
 from sqlalchemy.exc import IntegrityError
 
 from database import db
+from exceptions import InvalidUsage
 from src.serializers import user_data_schema
 from src import services
 
@@ -15,7 +16,7 @@ def get_user_data():
     player_id = int(request.args.get('player_id'))
     user_data = services.get_user_data(player_id)
     if not user_data:
-        return  # 404
+        raise InvalidUsage.user_data_not_found()
     return user_data
 
 
@@ -27,7 +28,7 @@ def create_user_data(player_id):
         user_data = services.create_user_data(player_id)
     except IntegrityError:
         db.session.rollback()
-        return
+        raise InvalidUsage.user_data_already_registered()
     return user_data
 
 
@@ -39,7 +40,7 @@ def update_user_data(player_id, balance):
         user_data = services.update_user_data(player_id, balance)
     except IntegrityError:
         db.session.rollback()
-        return
+        raise InvalidUsage.user_data_update_error()
     return user_data
 
 
@@ -49,12 +50,12 @@ def update_user_data(player_id, balance):
 def daily_bonus(player_id):
     user = services.get_user_data(player_id)
     if user is None:
-        return  # raise 404
+        raise InvalidUsage.user_data_not_found()
     try:
         user_data = services.change_balance(user, 100)
     except IntegrityError:
         db.session.rollback()
-        return
+        raise InvalidUsage.user_data_update_error()
     return user_data
 
 
@@ -64,12 +65,12 @@ def daily_bonus(player_id):
 def give_money(player_id, balance):
     user = services.get_user_data(player_id)
     if user is None:
-        return  # raise 404
+        raise InvalidUsage.user_data_not_found()
     try:
         user_data = services.change_balance(user, balance)
     except IntegrityError:
         db.session.rollback()
-        return
+        raise InvalidUsage.user_data_update_error()
     return user_data
 
 
@@ -79,12 +80,12 @@ def give_money(player_id, balance):
 def take_money(player_id, balance):
     user = services.get_user_data(player_id)
     if user is None:
-        return  # raise 404
+        raise InvalidUsage.user_data_not_found()
     if user.balance < -balance:
-        return  # raise no balance
+        raise InvalidUsage.not_enough_balance()
     try:
         user_data = services.change_balance(user, -balance)
     except IntegrityError:
         db.session.rollback()
-        return
+        raise InvalidUsage.user_data_update_error()
     return user_data
