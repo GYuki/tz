@@ -7,7 +7,7 @@ from src import services
 blueprint = Blueprint('item', __name__)
 
 
-@blueprint.route('api/item', methods=('GET',))
+@blueprint.route('/api/item', methods=('GET',))
 @marshal_with(item_schema)
 def get_item():
     item_id = int(request.args.get('id'))
@@ -17,7 +17,7 @@ def get_item():
     return item
 
 
-@blueprint.route('api/items', methods=('GET',))
+@blueprint.route('/api/items', methods=('GET',))
 @marshal_with(items_schema)
 def get_items():
     item_ids = request.args.get('ids')
