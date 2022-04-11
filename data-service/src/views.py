@@ -50,7 +50,11 @@ def update_user_data(player_id, balance):
 def daily_bonus(player_id):
     user = services.get_user_data(player_id)
     if user is None:
-        raise InvalidUsage.user_data_not_found()
+        try:
+            user_data = services.create_user_data(player_id)
+        except IntegrityError:
+            db.session.rollback()
+            raise InvalidUsage.user_data_update_error()
     try:
         user_data = services.change_balance(user, 100)
     except IntegrityError:
