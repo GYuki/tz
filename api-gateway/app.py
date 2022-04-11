@@ -6,7 +6,6 @@ class Config(object):
     SECRET_KEY = 'secret'
     JWT_AUTH_USERNAME_KEY = 'user'
     JWT_AUTH_HEADER_PREFIX = 'Token'
-    SERVER_NAME = "localhost:80"
 
 
 def create_app(config_object=Config):
