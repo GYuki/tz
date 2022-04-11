@@ -11,6 +11,8 @@ class Config(object):
     JWT_AUTH_USERNAME_KEY = 'user'
     JWT_AUTH_HEADER_PREFIX = 'Token'
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data.sqlite3'
+    MIN_BONUS_BORDER = 100
+    MAX_BONUS_BORDER = 500
 
 
 def create_app(config_object=Config):

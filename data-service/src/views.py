@@ -1,4 +1,6 @@
-from flask import Blueprint, request
+from random import randint
+
+from flask import Blueprint, request, current_app
 from flask_apispec import use_kwargs, marshal_with
 from sqlalchemy.exc import IntegrityError
 
@@ -56,7 +58,7 @@ def daily_bonus(player_id):
             db.session.rollback()
             raise InvalidUsage.user_data_update_error()
     try:
-        user_data = services.change_balance(user, 100)
+        user_data = services.change_balance(user, randint(current_app.config['MIN_BONUS_BORDER'], current_app.config['MAX_BONUS_BORDER']))
     except IntegrityError:
         db.session.rollback()
         raise InvalidUsage.user_data_update_error()
