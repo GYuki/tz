@@ -17,6 +17,12 @@ def get_info(user):
     return services.get_info(user)
 
 
+@blueprint.route('/items', methods=('GET',))
+@token_checker
+def get_items(user):
+    return services.get_items(user)
+
+
 @blueprint.route('/purchase', methods=('POST',))
 @token_checker
 def purchase_item(user):

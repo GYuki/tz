@@ -21,7 +21,18 @@ def get_item():
 @blueprint.route('/api/items', methods=('GET',))
 @marshal_with(items_schema)
 def get_items():
+    return services.get_items()
+
+
+@blueprint.route('/api/included_items', methods=('GET',))
+@marshal_with(items_schema)
+def get_included_items():
     item_ids = request.args.get('ids').split(',')
-    limit = request.args.get('limit', 20)
-    offset = request.args.get('offset', 0)
-    return services.get_items(item_ids, limit, offset)
+    return services.get_included_items(item_ids)
+
+
+@blueprint.route('/api/excluded_items', methods=('GET',))
+@marshal_with(items_schema)
+def get_excluded_items():
+    item_ids = request.args.get('ids').split(',')
+    return services.get_excluded_items(item_ids)

@@ -1,6 +1,7 @@
 from src.models import User
 from src.services import login
 from src.states.base import BaseState
+from src.states.enums import StateEnums
 
 
 class LoginState(BaseState):
@@ -11,4 +12,4 @@ class LoginState(BaseState):
         username = args[0]
         login_response = login(username)
         User.token = login_response['token']
-        self.controller.change_state(2)
+        self.controller.change_state(StateEnums.Lobby)

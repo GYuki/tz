@@ -25,7 +25,7 @@ def get_info(user):
     item_ids = item_ids_response.json()
 
     item_objects_response = requests.get(
-        f'{item_service}/api/items?ids={",".join(str(id) for id in item_ids["items"])}')
+        f'{item_service}/api/included_items?ids={",".join(str(id) for id in item_ids["items"])}')
     if item_objects_response.status_code != 200:
         return _make_error_response(item_objects_response)
     item_objects = item_objects_response.json()
@@ -39,6 +39,28 @@ def get_info(user):
         'user_id': user['id'],
         'username': user['username'],
         'balance': user_data['balance'],
+        'items': item_objects
+    }
+
+
+def get_items(user):
+    item_ids_response = requests.get(f'{user_item_service}/api/user_items?user_id={user["id"]}')
+    if item_ids_response.status_code != 200:
+        return _make_error_response(item_ids_response)
+    item_ids = item_ids_response.json()
+
+    if item_ids['items']:
+        item_objects_response = requests.get(
+            f'{item_service}/api/excluded_items?ids={",".join(str(id) for id in item_ids["items"])}')
+    else:
+        item_objects_response = requests.get(
+            f'{item_service}/api/items')
+
+    if item_objects_response.status_code != 200:
+        return _make_error_response(item_objects_response)
+
+    item_objects = item_objects_response.json()
+    return {
         'items': item_objects
     }
 

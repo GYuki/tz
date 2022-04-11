@@ -50,4 +50,6 @@ def remove_item_from_user(user_id, item_id):
     result = services.remove_item_from_user(user_id, item_id)
     if not result:
         raise InvalidUsage.user_item_not_found()
-    return
+    return {
+        "success": True
+    }
